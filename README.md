@@ -1,11 +1,9 @@
 # DeFi Analytics Data Platform: End-to-End Analytics Engineering Pipeline
 
-![Dashboard Preview](https://raw.githubusercontent.com/SergeyKoverzen/defi-analytics-dbt-bigquery/main/assets/dashboard_preview.png)
-*(Замените ссылку на ваш скриншот)*
+![Dashboard Preview](docs/TVL_Dashboard.pdf)
 
 ## 🔗 Quick Links
 - **Live Interactive Dashboard:** [📊 Looker Studio Report](https://datastudio.google.com/s/s_BfMsyFwoo)
-- **Author:** Sergey Koverzen ([LinkedIn](https://www.linkedin.com/in/serhii-k-51680032a) | [GitHub](https://github.com/SergeyKoverzen))
 
 ---
 
