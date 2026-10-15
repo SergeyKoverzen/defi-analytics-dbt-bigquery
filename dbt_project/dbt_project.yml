@@ -1,1 +1,20 @@
+name: 'defi_crypto_project'
+version: '1.0.0'
 
+profile: 'defi_crypto_project'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  defi_crypto_project:
+    example:
+      +materialized: view
