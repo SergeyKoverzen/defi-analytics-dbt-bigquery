@@ -12,33 +12,71 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 
 ---
 
+## 🌐 Data Sources & Extraction
+- **Primary Data Source:** Open-source Web3 / DeFi aggregator **[DeFiLlama API](https://defillama.com/docs/api)** (`[https://api.llama.fi/protocols](https://api.llama.fi/protocols)`).
+- **Data Attributes Extracted:** Protocol IDs, Names, Categories (DEXs, Lending, Liquid Staking, Yield, etc.), Main Chains, TVL (Total Value Locked), and historical metrics.
+- **Ingestion Technique:** Python-driven REST API polling with rate limiting and retry handling.
+
+---
+
 ## 🏗️ Data Architecture & Pipeline
 
-│
-▼ [ External DeFi API ]
-
-
-│
-▼ (Python Ingestion Script)
-[ BigQuery: Bronze Layer ]  ──>  bronze_protocols_raw (Raw JSON Payload)
-
-
-│
-▼ (dbt Models: JSON Parsing & Deduplication)
-[ BigQuery: Silver Layer ]  ──>  stg_protocols (Cleaned & Structured SQL Views)
-
-
-│
-▼ (dbt Models: Aggregations & Data Marts)
-[ BigQuery: Gold Layer ]    ──>  mart_protocols_summary (Materialized Data Mart)
-
-
-│
-▼ (BI Integration)
+```text
+[ External DeFi API ]
+         │
+         ▼ (Python Ingestion Script)
+[ BigQuery: Bronze Layer ]  ──>  `bronze_protocols_raw` (Raw JSON Payload)
+         │
+         ▼ (dbt Models: JSON Parsing & Deduplication)
+[ BigQuery: Silver Layer ]  ──>  `stg_protocols` (Cleaned & Structured SQL Views)
+         │
+         ▼ (dbt Models: Aggregations & Data Marts)
+[ BigQuery: Gold Layer ]    ──>  `mart_protocols_summary` (Materialized Data Mart)
+         │
+         ▼ (BI Integration)
 [ Looker Studio ]          ──>  Interactive Executive Dashboard ($570B+ TVL Analyzed)
 
 ---
 
+## ⚙️ Data Processing & Technical Implementation Details
+
+### 1. Ingestion Phase (Extract & Load — Python)
+
+- **Script:** `scripts/fetch_to_bigquery.py`
+- Fetches full protocol snapshots from DeFiLlama API.
+- Adds metadata fields: `fetch_timestamp` (UTC ISO format) and `ingestion_id`.
+- Appends unparsed JSON directly into BigQuery Bronze table (`bronze_protocols_raw`).
+
+### 2. Silver Layer (Parsing, Cleaning & Deduplication — dbt / SQL)
+
+- **Model:** `dbt_project/models/silver/stg_protocols.sql`
+- **JSON Parsing:** Uses BigQuery's native `JSON_VALUE()` functions to extract nested attributes (`protocol_id`, `name`, `category`, `chain`, `tvl`).
+- **Data Deduplication:** Due to frequent API polling, multiple snapshots of the same protocol accumulate over time. The Silver layer cleans duplicates using SQL Window Functions:
+
+###  ```sql
+  QUALIFY ROW_NUMBER() OVER (
+      PARTITION BY protocol_id 
+      ORDER BY fetch_timestamp DESC
+  ) = 1
+
+### 3. Gold Layer (Analytics Marts & Aggregations)
+
+- Model: dbt_project/models/gold/mart_protocols_summary.sql
+
+- Analytical Transformations: Groups and materializes key KPIs: Total Value Locked (TVL) per Blockchain (main_chain), Total TVL & Protocol Count per Category (category), and average TVL metrics.
+
+- Optimized for BI: Materialized as physical tables in BigQuery for high-performance querying and fast response times in BI tools.
+
+### 4. BI & Visualisation Layer (Looker Studio)
+
+- Executive Metrics: High-level scorecard showing Total Market TVL ($570.7B+).
+
+- Liquidity Concentration: Pie chart highlighting dominant blockchains (Multi-Chain & Ethereum capturing ~80%+ liquidity).
+
+- Sector Analysis: Bar charts and data tables breaking down TVL and protocol counts across categories (DEXs, Lending, Liquid Staking, Yield).
+  
+  ---
+  
 ## ⚙️ Key Technical Features & Implementation Details
 
 ### 1. Bronze Layer (Raw Ingestion)
