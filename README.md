@@ -1,7 +1,7 @@
 # DeFi Analytics Data Platform: End-to-End Analytics Engineering Pipeline
 
 ## 🔗 Quick Links
-![Dashboard Preview](docs/TVL_Dashboard.pdf)  -  **Live Interactive Dashboard:** [📊 Looker Studio Report](https://datastudio.google.com/s/s_BfMsyFwoo)
+![Dashboard Preview](docs/TVL_Dashboard.pdf)   -AND-   **Live Interactive Dashboard:** [📊 Looker Studio Report](https://datastudio.google.com/s/s_BfMsyFwoo)
 
 ---
 
