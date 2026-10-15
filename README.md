@@ -8,12 +8,12 @@
 ## 📌 Project Overview
 This project demonstrates a production-style Analytics Engineering workflow that transforms raw, unstructured Web3 API data into structured, business-ready analytical data marts.
 
-Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline automates the extraction of DeFi market metrics (Total Value Locked, Protocol Categories, Chain Breakdown), handles nested JSON parsing, deduplicates snapshot data, and exposes materialized tables to Looker Studio.
+Initially, the raw datasets and transformations were prototyped and prepared on **Databricks** with a target connection for **Power BI** reporting. To build an agile, cloud-native Analytics Engineering stack, the architecture was fully materialized using a **Medallion Architecture (Bronze → Silver → Gold)** in **Google BigQuery** and **dbt**, serving a live dashboard in **Looker Studio**.
 
 ---
 
 ## 🌐 Data Sources & Extraction
-- **Primary Data Source:** Open-source Web3 / DeFi aggregator **[DeFiLlama API](https://defillama.com/docs/api)** (`[https://api.llama.fi/protocols](https://api.llama.fi/protocols)`).
+- **Primary Data Source:** Open-source Web3 / DeFi aggregator **[DeFiLlama API](https://defillama.com/docs/api)** (`https://api.llama.fi/protocols`).
 - **Data Attributes Extracted:** Protocol IDs, Names, Categories (DEXs, Lending, Liquid Staking, Yield, etc.), Main Chains, TVL (Total Value Locked), and historical metrics.
 - **Ingestion Technique:** Python-driven REST API polling with rate limiting and retry handling.
 
@@ -24,7 +24,10 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 ```text
 [ External DeFi API ]
          │
-         ▼ (Python Ingestion Script)
+         ▼ (Initial Prototyping & Staging on Databricks / Power BI Ready)
+[ Databricks / PySpark Environment ]
+         │
+         ▼ (Python Ingestion Script to Production DWH)
 [ BigQuery: Bronze Layer ]  ──>  `bronze_protocols_raw` (Raw JSON Payload)
          │
          ▼ (dbt Models: JSON Parsing & Deduplication)
@@ -34,18 +37,25 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 [ BigQuery: Gold Layer ]    ──>  `mart_protocols_summary` (Materialized Data Mart)
          │
          ▼ (BI Integration)
-[ Looker Studio ]          ──>  Interactive Executive Dashboard ($570B+ TVL Analyzed)
+[ Looker Studio / Power BI ] ──> Interactive Executive Dashboards ($570B+ TVL Analyzed)
 
 ---
 
 ## ⚙️ Data Processing & Technical Implementation Details
 
-### 1. Ingestion Phase (Extract & Load — Python)
+### 0. Initial Prototyping (Databricks & Power BI Integration)
 
-- **Script:** `scripts/fetch_to_bigquery.py`
-- Fetches full protocol snapshots from DeFiLlama API.
-- Adds metadata fields: `fetch_timestamp` (UTC ISO format) and `ingestion_id`.
-- Appends unparsed JSON directly into BigQuery Bronze table (`bronze_protocols_raw`).
+Processed initial raw API payloads using Databricks (PySpark / Spark SQL) to explore schema definitions and build prototype analytical tables.
+
+Formatted data schemas for direct model integration with Power BI via DirectQuery / Import modes.
+
+### 1. Bronze Layer (Raw Ingestion)
+
+Script: scripts/fetch_to_bigquery.py
+
+Fetches full protocol snapshots from DeFiLlama API using Python (requests, google-cloud-bigquery).
+
+Appends unparsed JSON records (raw_json) directly into BigQuery Bronze table with metadata fields (fetch_timestamp in UTC ISO format).
 
 ### 2. Silver Layer (Parsing, Cleaning & Deduplication — dbt / SQL)
 
@@ -53,7 +63,7 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 - **JSON Parsing:** Uses BigQuery's native `JSON_VALUE()` functions to extract nested attributes (`protocol_id`, `name`, `category`, `chain`, `tvl`).
 - **Data Deduplication:** Due to frequent API polling, multiple snapshots of the same protocol accumulate over time. The Silver layer cleans duplicates using SQL Window Functions:
 
-###  ```sql
+    ```sql
   QUALIFY ROW_NUMBER() OVER (
       PARTITION BY protocol_id 
       ORDER BY fetch_timestamp DESC
@@ -118,7 +128,7 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 
 ## 📁 Repository Structure
 
-
+```text
 ├── dbt_project/              # dbt project configuration & models
 │   ├── models/
 │   │   ├── bronze/           # Raw data references
