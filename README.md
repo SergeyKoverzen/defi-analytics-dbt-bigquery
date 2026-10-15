@@ -118,7 +118,7 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 
 ## 📁 Repository Structure
 
-```text
+
 ├── dbt_project/              # dbt project configuration & models
 │   ├── models/
 │   │   ├── bronze/           # Raw data references
