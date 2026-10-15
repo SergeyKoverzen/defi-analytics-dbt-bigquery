@@ -89,5 +89,5 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 │   └── dbt_project.yml
 ├── scripts/                  # Python ingestion scripts
 │   └── fetch_to_bigquery.py
-├── assets/                   # Dashboard screenshots and diagrams
+├── docs/                   # Dashboard screenshots and diagrams
 └── README.md
