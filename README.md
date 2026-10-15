@@ -17,22 +17,22 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 │
 ▼ [ External DeFi API ]
 
-▼
+
 │
 ▼ (Python Ingestion Script)
 [ BigQuery: Bronze Layer ]  ──>  bronze_protocols_raw (Raw JSON Payload)
 
-▼
+
 │
 ▼ (dbt Models: JSON Parsing & Deduplication)
 [ BigQuery: Silver Layer ]  ──>  stg_protocols (Cleaned & Structured SQL Views)
 
-▼
+
 │
 ▼ (dbt Models: Aggregations & Data Marts)
 [ BigQuery: Gold Layer ]    ──>  mart_protocols_summary (Materialized Data Mart)
 
-▼
+
 │
 ▼ (BI Integration)
 [ Looker Studio ]          ──>  Interactive Executive Dashboard ($570B+ TVL Analyzed)
