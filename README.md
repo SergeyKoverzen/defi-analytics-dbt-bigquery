@@ -21,7 +21,7 @@ Initially, the raw datasets and transformations were prototyped and prepared on 
 
 ## 🏗️ Data Architecture & Pipeline
 
-```text
+```
 [ External DeFi API ]
          │
          ▼ (Initial Prototyping & Staging on Databricks / Power BI Ready)
@@ -38,7 +38,7 @@ Initially, the raw datasets and transformations were prototyped and prepared on 
          │
          ▼ (BI Integration)
 [ Looker Studio / Power BI ] ──> Interactive Executive Dashboards ($570B+ TVL Analyzed)
-
+```
 ---
 
 ## ⚙️ Data Processing & Technical Implementation Details
@@ -84,27 +84,6 @@ Appends unparsed JSON records (raw_json) directly into BigQuery Bronze table wit
 - Liquidity Concentration: Pie chart highlighting dominant blockchains (Multi-Chain & Ethereum capturing ~80%+ liquidity).
 
 - Sector Analysis: Bar charts and data tables breaking down TVL and protocol counts across categories (DEXs, Lending, Liquid Staking, Yield).
-  
-  ---
-  
-## ⚙️ Key Technical Features & Implementation Details
-
-### 1. Bronze Layer (Raw Ingestion)
-- Fetches protocol metrics from Web3 endpoints using Python (`requests`, `google-cloud-bigquery`).
-- Stores append-only raw JSON records (`raw_json`) with ingestion metadata (`fetch_timestamp`).
-
-### 2. Silver Layer (Parsing & Deduplication)
-- **JSON Attribute Extraction:** Uses native BigQuery `JSON_VALUE` within dbt staging models to unnest attributes like `protocol_id`, `protocol_name`, `category`, `chain`, and `tvl`.
-- **Data Quality & Deduplication:** Implements `ROW_NUMBER() OVER (PARTITION BY protocol_id ORDER BY fetch_timestamp DESC)` to eliminate duplicate API polling snapshots and retain only the latest data state.
-
-### 3. Gold Layer (Analytics Marts)
-- **Analytical Transformations:** Groups and materializes key KPIs: Total Value Locked (TVL), Average TVL per category, Protocol counts, and Chain liquidity shares.
-- **Optimized for BI:** Materialized as tables in BigQuery for fast query response times in BI tools.
-
-### 4. BI & Visualisation (Looker Studio)
-- **Executive Metrics:** High-level scorecard showing Total Market TVL (**$570.7B+**).
-- **Liquidity Concentration:** Pie chart highlighting dominant blockchains (Multi-Chain & Ethereum capturing ~80%+ liquidity).
-- **Sector Analysis:** Bar chart and data tables breaking down TVL and protocol count across categories (DEXs, Lending, Liquid Staking, Yield).
 
 ---
 
@@ -128,7 +107,7 @@ Appends unparsed JSON records (raw_json) directly into BigQuery Bronze table wit
 
 ## 📁 Repository Structure
 
-```text
+```
 ├── dbt_project/              # dbt project configuration & models
 │   ├── models/
 │   │   ├── bronze/           # Raw data references
@@ -139,3 +118,4 @@ Appends unparsed JSON records (raw_json) directly into BigQuery Bronze table wit
 │   └── fetch_to_bigquery.py
 ├── docs/                   # Dashboard screenshots and diagrams
 └── README.md
+```
