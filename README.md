@@ -80,13 +80,14 @@ Using a **Medallion Architecture (Bronze → Silver → Gold)**, the pipeline au
 
 ## 📁 Repository Structure
 
-├── dbt_project/             # dbt project configuration & models
+```text
+├── dbt_project/              # dbt project configuration & models
 │   ├── models/
-│   │   ├── bronze/          # Raw data references
-│   │   ├── silver/          # Staging models (parsing & deduplication)
-│   │   └── gold/            # Analytical data marts (mart_protocols_summary)
+│   │   ├── bronze/           # Raw data references
+│   │   ├── silver/           # Staging models (parsing & deduplication)
+│   │   └── gold/             # Analytical data marts (mart_protocols_summary)
 │   └── dbt_project.yml
-├── scripts/                 # Python ingestion scripts
+├── scripts/                  # Python ingestion scripts
 │   └── fetch_to_bigquery.py
-├── assets/                  # Dashboard screenshots and diagrams
+├── assets/                   # Dashboard screenshots and diagrams
 └── README.md
