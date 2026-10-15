@@ -68,6 +68,7 @@ Appends unparsed JSON records (raw_json) directly into BigQuery Bronze table wit
       PARTITION BY protocol_id 
       ORDER BY fetch_timestamp DESC
   ) = 1
+    ```
 
 ### 3. Gold Layer (Analytics Marts & Aggregations)
 
